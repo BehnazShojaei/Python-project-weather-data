@@ -13,7 +13,7 @@ def format_temperature(temp):
     Returns:
         A string contain the temperature and "degrees Celcius."
     """
-    DEGREE_SYMBOL = "degrees Celcius"
+   
     try:
         temp = float(input(temp))
         return f"{temp}{DEGREE_SYMBOL}"
@@ -24,8 +24,6 @@ def format_temperature(temp):
 
 
     
-
-
 def convert_date(iso_string):
     """Converts and ISO formatted date into a human-readable format.
 
@@ -34,7 +32,13 @@ def convert_date(iso_string):
     Returns:
         A date formatted like: Weekday Date Month Year e.g. Tuesday 06 July 2021
     """
-    pass
+    try:
+        date_obj = datetime.strptime(iso_string, "%Y-%m-%dT%H:%M:%S%z")
+        return date_obj.strftime("%A %d %B %Y") 
+    except ValueError:
+        print(f"Invalid input {iso_string} should be a in 'yyyy-mm-ddThh:mm:ss+zz:zz' format")
+        return None
+
 
 
 def convert_f_to_c(temp_in_fahrenheit):
