@@ -13,7 +13,17 @@ def format_temperature(temp):
     Returns:
         A string contain the temperature and "degrees Celcius."
     """
-    return f"{temp}{DEGREE_SYMBOL}"
+    DEGREE_SYMBOL = "degrees Celcius"
+    try:
+        temp = float(input(temp))
+        return f"{temp}{DEGREE_SYMBOL}"
+               
+    except ValueError:
+        print(f"Invalid input {temp} should be a number")
+        return None
+
+
+    
 
 
 def convert_date(iso_string):
