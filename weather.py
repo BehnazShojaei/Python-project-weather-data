@@ -49,7 +49,14 @@ def convert_f_to_c(temp_in_fahrenheit):
     Returns:
         A float representing a temperature in degrees Celcius, rounded to 1 decimal place.
     """
-    pass
+
+    try:
+        return round((float( temp_in_fahrenheit) - 32)* 5/9 , 1)
+    
+    except ValueError:
+        print(f"Invalid input {temp_in_fahrenheit} should be a float number")
+        return None
+    
 
 
 def calculate_mean(weather_data):
