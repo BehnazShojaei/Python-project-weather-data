@@ -13,11 +13,9 @@ def format_temperature(temp):
     Returns:
         A string contain the temperature and "degrees Celcius."
     """
-   
     try:
         temp = float(input(temp))
-        return f"{temp}{DEGREE_SYMBOL}"
-               
+        return f"{temp}{DEGREE_SYMBOL}"   
     except ValueError:
         print(f"Invalid input {temp} should be a number")
         return None
@@ -51,7 +49,7 @@ def convert_f_to_c(temp_in_fahrenheit):
     """
 
     try:
-        return round((float( temp_in_fahrenheit) - 32)* 5/9 , 1)
+        return round((float(temp_in_fahrenheit) - 32)* 5/9 , 1)
     
     except ValueError:
         print(f"Invalid input {temp_in_fahrenheit} should be a float number")
@@ -67,7 +65,16 @@ def calculate_mean(weather_data):
     Returns:
         A float representing the mean value.
     """
-    pass
+    
+    try:
+        weather_data = [float(item) for item in weather_data]
+    except ValueError:
+        print(f"Invalid input weather_data should be a list of float numbers")
+        return None
+    mean_value = sum(weather_data)/ len(weather_data) 
+    return mean_value
+
+
 
 
 def load_data_from_csv(csv_file):
