@@ -79,13 +79,26 @@ def calculate_mean(weather_data):
 
 def load_data_from_csv(csv_file):
     """Reads a csv file and stores the data in a list.
-
     Args:
         csv_file: a string representing the file path to a csv file.
     Returns:
         A list of lists, where each sublist is a (non-empty) line in the csv file.
     """
-    pass
+    csv_list_of_lists =[]
+    with open (csv_file, mode='r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)
+        for line in csv_reader:
+            if line: #check line is not empty
+                for i in range(1, len(line)): #check each item in line is int
+                    try:
+                        line[i] = float(line[i]) #consider both int and float at the same time, I can seperate check int and float! is there any point?
+                    except ValueError:
+                        pass #leave it as string if it can't be converted
+                csv_list_of_lists.append(line)
+                print(csv_list_of_lists)
+        return csv_list_of_lists
+    
 
 
 def find_min(weather_data):
@@ -96,7 +109,19 @@ def find_min(weather_data):
     Returns:
         The minimum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-    pass
+    if not weather_data: #check if the list is not empty
+        return () 
+
+    try: 
+        weather_data = [float(item) for item in weather_data] #check if the list item can be float   
+    except ValueError:     
+        return ()
+        
+    reversed_list = weather_data[::-1]
+    min_value = min(reversed_list)
+    last_position = len(weather_data) - 1 - reversed_list.index(min_value)
+
+    return (min_value , last_position)
 
 
 def find_max(weather_data):
