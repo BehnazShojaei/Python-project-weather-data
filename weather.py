@@ -14,7 +14,7 @@ def format_temperature(temp):
         A string contain the temperature and "degrees Celcius."
     """
     try:
-        temp = float(temp)
+        temp = round(float(temp),1)
         return f"{temp}{DEGREE_SYMBOL}"   
     except ValueError:
         raise ValueError("Invalid input {temp} must be a number")
@@ -210,8 +210,8 @@ def generate_summary(weather_data):
     last_day_of_min = convert_date(day_list[index_min_temp])
     last_day_of_max = convert_date(day_list[index_max_temp])
 
-    str_of_average_low = format_temperature(round(calculate_mean(min_list),1))
-    str_of_average_high = format_temperature(round(calculate_mean(max_list),1))
+    str_of_average_low = format_temperature(calculate_mean(min_list))
+    str_of_average_high = format_temperature(calculate_mean(max_list))
 
 # I wanted to avoid calling convert_f_to_c multiple times so I applied when streaming from data, but while calculating the mean of multiple float end up having more than 1 decimal f now I need to apply round two times! 
     
