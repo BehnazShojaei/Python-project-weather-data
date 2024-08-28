@@ -3,7 +3,27 @@ from datetime import datetime
 
 DEGREE_SYMBOL = u"\N{DEGREE SIGN}C"
 
+def try_float(item, raise_error=False):
+    """
+    Tries to convert the item to float.
 
+    Args:
+        item: The item to be converted.
+        raise_error: If True, raises ValueError on failure; otherwise, returns None.
+
+    Returns:
+        A float if conversion is successful, or None if not and raise_error is False.
+    
+    Raises:
+        ValueError: If raise_error is True and conversion fails.
+    """
+    try:
+        return float(item)
+    except ValueError as e:
+        if raise_error:
+            raise ValueError(f"Invalid data format: {e}")
+        return None
+    
 def format_temperature(temp):
     """Takes a temperature and returns it in string format with the degrees
         and Celcius symbols.
@@ -14,7 +34,7 @@ def format_temperature(temp):
         A string contain the temperature and "degrees Celcius."
     """
     try:
-        temp = round(float(temp),1)
+        temp = round(float(temp),1) 
         return f"{temp}{DEGREE_SYMBOL}"   
     except ValueError:
         raise ValueError("Invalid input {temp} must be a number")
@@ -104,7 +124,14 @@ def load_data_from_csv(csv_file):
 
     return data_list
 
-
+def try_float(item, raise_error=False): #this function will check our item and try to make it a float number where possible return None for non convertible, Filter empty strings or non-convertible elements like "carrot" while keep the indexing same  
+    try:
+        return float(item)
+    except ValueError:
+        if raise_error:
+            raise ValueError(f"Invalid input {item}. It must be a number.")
+        return None
+    
 def find_min(weather_data):
     """Calculates the minimum value in a list of numbers.
 
@@ -113,18 +140,19 @@ def find_min(weather_data):
     Returns:
         The minimum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-    # Filter out empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
 
-    try: 
-        weather_data = [float(item) for item in weather_data] #check if the list item can be float   
-    except ValueError:     
-        return None
-    
-    if not weather_data:  # Check if all lines were empty or non-convertible
+    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched by calling try_float  
+    weather_data = [try_float(item) for item in weather_data]
+
+    # List comprehension to exclude None values so code can use min function on list
+    valid_data = [item for item in weather_data if item is not None]
+
+    if not valid_data:  # If all values are None, or the list is empty return empty tuple
         return ()
 
-    reversed_list = weather_data[::-1]
-    min_value = min(reversed_list)
+    min_value = min(valid_data)
+    
+    reversed_list = weather_data[::-1] #use weather_data to have correct index
     last_position = len(weather_data) - 1 - reversed_list.index(min_value)
 
     return (min_value , last_position)
@@ -139,21 +167,20 @@ def find_max(weather_data):
         The maximum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
     
-    try: 
-        weather_data = [float(item) for item in weather_data] #check if the list item can be float   
-    except ValueError:     
-        return None
-    
-    if not weather_data:  # Check if all lines were empty or non-convertible
+    weather_data = [try_float(item) for item in weather_data]
+
+    # List comprehension to exclude None values so code can use max function on list
+    valid_data = [item for item in weather_data if item is not None]
+
+    if not valid_data:  # If all values are None, or the list is empty return empty tuple
         return ()
 
-    reversed_list = weather_data[::-1]
-    max_value = max(reversed_list)
+    max_value = max(valid_data)
+    
+    reversed_list = weather_data[::-1] #use weather_data to have correct index
     last_position = len(weather_data) - 1 - reversed_list.index(max_value)
 
     return (max_value , last_position)
-
-
 
 
 def generate_summary(weather_data):
