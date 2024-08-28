@@ -113,32 +113,23 @@ def find_min(weather_data):
     Returns:
         The minimum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-    if not weather_data:  # Check if the list is empty
+    # Filter out empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
+
+    try: 
+        weather_data = [float(item) for item in weather_data] #check if the list item can be float   
+    except ValueError:     
+        return None
+    
+    if not weather_data:  # Check if all lines were empty or non-convertible
         return ()
 
-    # Filter out empty strings or non-convertible elements like "carrot"
-    cleaned_data = []
-    for item in weather_data:
-        try:
-            cleaned_data.append(float(item))  # Convert each item to float
-        except ValueError:
-            # Skip any element that can't be converted to float
-            continue
+    reversed_list = weather_data[::-1]
+    min_value = min(reversed_list)
+    last_position = len(weather_data) - 1 - reversed_list.index(min_value)
 
-    if not cleaned_data:  # Check if all lines were empty or non-convertible
-        return ()
+    return (min_value , last_position)
 
-    min_value = cleaned_data[0]  # Initialize min value
-    min_index = 0  # Initialize min index
-
-    for index in range(len(cleaned_data)):  # Find the last occurrence of the minimum
-        if cleaned_data[index] <= min_value:
-            min_value = cleaned_data[index]
-            min_index = index
-
-    return min_value, min_index
-
-
+    
 def find_max(weather_data):
     """Calculates the maximum value in a list of numbers.
 
@@ -147,28 +138,21 @@ def find_max(weather_data):
     Returns:
         The maximum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-    if not weather_data:  
+    
+    try: 
+        weather_data = [float(item) for item in weather_data] #check if the list item can be float   
+    except ValueError:     
+        return None
+    
+    if not weather_data:  # Check if all lines were empty or non-convertible
         return ()
 
-    cleaned_data = []
-    for item in weather_data:
-        try:
-            cleaned_data.append(float(item))  
-        except ValueError:
-            continue
+    reversed_list = weather_data[::-1]
+    max_value = max(reversed_list)
+    last_position = len(weather_data) - 1 - reversed_list.index(max_value)
 
-    if not cleaned_data:  
-        return ()
+    return (max_value , last_position)
 
-    max_value = cleaned_data[0]  
-    max_index = 0  
-
-    for index in range(len(cleaned_data)):  
-        if cleaned_data[index] >= max_value:
-            max_value = cleaned_data[index]
-            max_index = index
-
-    return max_value, max_index
 
 
 
