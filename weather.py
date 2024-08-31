@@ -51,8 +51,8 @@ def convert_date(iso_string):
         A date formatted like: Weekday Date Month Year e.g. Tuesday 06 July 2021
     """
     try:
-        date_object = datetime.fromisoformat(iso_string) # Parse ISO format date string to datetime object
-        return date_object.strftime("%A %d %B %Y")
+        date_object = datetime.fromisoformat(iso_string).strftime("%A %d %B %Y") # Parse ISO format date string to datetime object
+        return date_object
     except ValueError:
         raise ValueError("The provided date must be in ISO format (YYYY-MM-DD).")
 
@@ -65,8 +65,8 @@ def convert_f_to_c(temp_in_fahrenheit):
     Returns:
         A float representing a temperature in degrees Celcius, rounded to 1 decimal place.
     """   
-    temp_in_f = try_float(temp_in_fahrenheit)
-    temp_in_c = (temp_in_f - 32) * 5 / 9 # Convert Fahrenheit to Celsius
+
+    temp_in_c = (try_float(temp_in_fahrenheit) - 32) * 5 / 9 # Convert Fahrenheit to Celsius
     return round(temp_in_c, 1) # Round to 1 decimal place
 
 
@@ -84,8 +84,9 @@ def calculate_mean(weather_data):
     # List comprehension to exclude None values
     valid_data = [item for item in weather_data if item is not None]
     
-    if not valid_data:  # If all values are None, or the list is empty return empty tuple 
+    if not valid_data:  # If all values are None, return empty tuple 
         return ()
+    
     mean_value = sum(valid_data) / len(valid_data)
     return mean_value
 
@@ -122,6 +123,36 @@ def load_data_from_csv(csv_file):
     return data_list
 
     
+def find_extreme (weather_data , extreme_function):
+
+    """Finds the extreme value (minimum or maximum) and its position in the list.
+
+    Args:
+        weather_data: A list of numbers (or strings that may represent numbers).
+        extreme_function: A function to find the extreme value (min or max).
+    
+    Returns:
+        A tuple containing the extreme value and its position in the list.
+        In case of multiple matches, returns the index of the last occurrence.
+        Returns an empty tuple if the list has no valid numbers.
+    """
+
+    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
+
+    weather_data = [try_float(item) for item in reversed(weather_data)]
+
+    # List comprehension to exclude None values so code can use max function on list
+    valid_data = [item for item in weather_data if item is not None]
+
+    if not valid_data:  # If all values are None, or the list is empty return empty tuple
+        return ()
+    
+    extreme_value = extreme_function(valid_data)   
+    
+    last_position = len(weather_data) - 1 - weather_data.index(extreme_value)
+
+    return (extreme_value , last_position)
+
 def find_min(weather_data):
     """Calculates the minimum value in a list of numbers.
 
@@ -130,22 +161,7 @@ def find_min(weather_data):
     Returns:
         The minimum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-
-    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
-
-    weather_data = [try_float(item) for item in weather_data]
-    # List comprehension to exclude None values
-    valid_data = [item for item in weather_data if item is not None]
-
-    if not valid_data:  # If all values are None, or the list is empty return empty tuple
-        return ()
-
-    min_value = min(valid_data)
-    
-    reversed_list = weather_data[::-1] #use weather_data to have correct index
-    last_position = len(weather_data) - 1 - reversed_list.index(min_value)
-
-    return (min_value , last_position)
+    return find_extreme(weather_data , min)
     
 def find_max(weather_data):
     """Calculates the maximum value in a list of numbers.
@@ -155,21 +171,7 @@ def find_max(weather_data):
     Returns:
         The maximum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
-    
-    weather_data = [try_float(item) for item in weather_data]
-
-    # List comprehension to exclude None values so code can use max function on list
-    valid_data = [item for item in weather_data if item is not None]
-
-    if not valid_data:  # If all values are None, or the list is empty return empty tuple
-        return ()
-
-    max_value = max(valid_data)
-    
-    reversed_list = weather_data[::-1] #use weather_data to have correct index
-    last_position = len(weather_data) - 1 - reversed_list.index(max_value)
-
-    return (max_value , last_position)
+    return find_extreme(weather_data , max)
 
 
 def generate_summary(weather_data):
@@ -193,10 +195,9 @@ def generate_summary(weather_data):
 
     for row in weather_data:
         day_list.append(row[0])
-        min_list.append(convert_f_to_c(row[1]))  # convert_f_to_c and all other functions handles its own errors
+        min_list.append(convert_f_to_c(row[1])) 
         max_list.append(convert_f_to_c(row[2]))  
 
-    number_of_days = len(weather_data)
 
     if not min_list or not max_list:
         return "No valid temperature data available."
@@ -210,9 +211,10 @@ def generate_summary(weather_data):
     last_day_of_min = convert_date(day_list[index_min_temp])
     last_day_of_max = convert_date(day_list[index_max_temp])
 
+    number_of_days = len(weather_data)
     str_of_average_low = format_temperature(calculate_mean(min_list))
     str_of_average_high = format_temperature(calculate_mean(max_list))
-   
+
     summary = (f"{number_of_days} Day Overview\n"
             f"  The lowest temperature will be {min_temp_c}, and will occur on {last_day_of_min}.\n"
             f"  The highest temperature will be {max_temp_c}, and will occur on {last_day_of_max}.\n"
@@ -230,9 +232,10 @@ def generate_daily_summary(weather_data):
         A string containing the summary information.
     """
     daily_summary= ""
-    for row in weather_data: # Skip empty rows or rows with missing data
+
+    for row in weather_data: 
         if not row or len(row) < 3 or row[0] == '' or row[1] == '' or row[2] == '':
-            continue
+            continue # Skip empty rows or rows with missing data
 
         date = convert_date(row[0])
         min_temp_c = format_temperature(convert_f_to_c(row[1]))

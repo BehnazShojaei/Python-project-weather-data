@@ -55,3 +55,29 @@ temperatures6 = [49, 57, 56, 55, 53, 49]
 temperatures7 = [49, "57", 56, 55,0 ,0, 53, "0", "carrot", ""]
 
 find_min(temperatures7)
+
+def find_extreme (weather_data , extreme_function):
+
+ 
+    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
+
+    weather_data = [try_float(item) for item in reversed(weather_data)]
+
+    # List comprehension to exclude None values so code can use max function on list
+    valid_data = [item for item in weather_data if item is not None]
+
+    if not valid_data:  # If all values are None, or the list is empty return empty tuple
+        return ()
+    
+    extreme_value = extreme_function(valid_data)   
+    
+    last_position = len(weather_data) - 1 - weather_data.index(extreme_value)
+
+    return (extreme_value , last_position)
+
+def find_max(weather_data):
+    
+    return find_extreme(weather_data , max)
+
+
+print(find_max(temperatures1))

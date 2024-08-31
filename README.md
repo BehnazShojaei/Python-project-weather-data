@@ -7,4 +7,4 @@ Starter code for the Plus Weather project.
 
 - [x] Implement the methods in `weather.py`.
 - [x] Verify that everything works as intended by running the tests with `python run_tests.py`.
-- [x] Test/Print function generation file for more complex functions
+- [x] Test/debug file for manually testing functions.
