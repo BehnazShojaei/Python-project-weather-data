@@ -31,6 +31,31 @@ def load_data_from_csv(csv_file):
         A list of lists, where each sublist is a (non-empty) line in the csv file.
     """
 
+    # data_list = [] #an empty list to store data
+    # try:
+    #     with open(csv_file, mode='r', newline='', encoding='utf-8') as file:
+    #         csv_reader = csv.DictReader(file) #using dict to be readable
+            
+    #         for row in csv_reader:
+    #             try:
+    #                 date = row["date"]
+    #                 min_temp = float(row["min"])
+    #                 max_temp = float(row["max"])
+    #                 data_list.append([date, min_temp, max_temp]) #each row will be a sublist of the data list
+                
+    #             except KeyError: #if there is a missing column
+    #                 raise ValueError("Missing required columns in the CSV file.")
+    #             except ValueError as e: #if we can't convert to float
+    #                 raise ValueError(f"Invalid data format: {e}")
+    
+    # except FileNotFoundError: #if there is no file
+    #     raise FileNotFoundError(f"The file at {csv_file} does not exist.")
+    # except Exception as e: #any other error 
+    #     raise Exception(f"An error occurred while reading the CSV file: {e}")
+
+    # return data_list
+
+
     data_list = [] #an empty list to store data
     try:
         with open(csv_file, mode='r', newline='', encoding='utf-8') as file:

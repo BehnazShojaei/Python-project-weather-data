@@ -4,7 +4,7 @@ from datetime import datetime
 DEGREE_SYMBOL = u"\N{DEGREE SIGN}C"
 
 def try_float(item, raise_error=False):
-    #initialise raise_error to be able to check it later and get an eplanation of error
+    #initialise raise_error to be able to check it later and get an explanation of error
     #this function will check our item and try to make it a float number where possible return None for non convertible, Filter empty strings or non-convertible elements like "carrot" while keep the indexing same 
 
     """
@@ -40,6 +40,7 @@ def format_temperature(temp):
     temp = round(temp,1)
     return f"{temp}{DEGREE_SYMBOL}"
 
+
     
 def convert_date(iso_string):
     """Converts and ISO formatted date into a human-readable format.
@@ -69,8 +70,6 @@ def convert_f_to_c(temp_in_fahrenheit):
     return round(temp_in_c, 1) # Round to 1 decimal place
 
 
-#############################################Question : check test debug folder/calculate mean: should I consider the existance of non value in mean calculation?
-
 def calculate_mean(weather_data):
     """Calculates the mean value from a list of numbers.
 
@@ -80,16 +79,16 @@ def calculate_mean(weather_data):
         A float representing the mean value.
     """
     # the code will check if the list is empty, if it is convertible to float, if it's not then we will get detailed msg of error also is it better option to return if there is no data?
-    try:
-        weather_data = [float(item) for item in weather_data]
-        if len(weather_data) == 0: 
-            raise ValueError("The list is empty.")
-        mean_value = sum(weather_data) / len(weather_data)
-        return mean_value
-    except ValueError as error:
-        raise ValueError(f"Invalid input: {error}")
 
-################################Question : can't test my test debug file to make sure I am handling missing column
+    weather_data = [try_float(item) for item in weather_data]
+    # List comprehension to exclude None values
+    valid_data = [item for item in weather_data if item is not None]
+    
+    if not valid_data:  # If all values are None, or the list is empty return empty tuple 
+        return ()
+    mean_value = sum(valid_data) / len(valid_data)
+    return mean_value
+
 
 def load_data_from_csv(csv_file):
     """Reads a csv file and stores the data in a list.
@@ -100,6 +99,7 @@ def load_data_from_csv(csv_file):
     """
 
     data_list = [] #an empty list to store data
+
     try:
         with open(csv_file, mode='r', newline='', encoding='utf-8') as file:
             csv_reader = csv.DictReader(file) #using dict to be readable
@@ -107,15 +107,13 @@ def load_data_from_csv(csv_file):
             for row in csv_reader:
                 try:
                     date = row["date"]
-                    min_temp = float(row["min"])
-                    max_temp = float(row["max"])
+                    min_temp = try_float(row["min"], raise_error=True)
+                    max_temp = try_float(row["max"], raise_error=True)
                     data_list.append([date, min_temp, max_temp]) #each row will be a sublist of the data list
                 
                 except KeyError: #if there is a missing column
                     raise ValueError("Missing required columns in the CSV file.")
-                except ValueError as e: #if we can't convert to float
-                    raise ValueError(f"Invalid data format: {e}")
-    
+            
     except FileNotFoundError: #if there is no file
         raise FileNotFoundError(f"The file at {csv_file} does not exist.")
     except Exception as e: #any other error 
@@ -133,10 +131,10 @@ def find_min(weather_data):
         The minimum value and it's position in the list. (In case of multiple matches, return the index of the *last* example in the list.)
     """
 
-    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched by calling try_float  
-    weather_data = [try_float(item) for item in weather_data]
+    # Filter empty strings or non-convertible elements like "carrot" and replace it with None to keep indexing untouched! 
 
-    # List comprehension to exclude None values so code can use min function on list
+    weather_data = [try_float(item) for item in weather_data]
+    # List comprehension to exclude None values
     valid_data = [item for item in weather_data if item is not None]
 
     if not valid_data:  # If all values are None, or the list is empty return empty tuple
@@ -148,7 +146,6 @@ def find_min(weather_data):
     last_position = len(weather_data) - 1 - reversed_list.index(min_value)
 
     return (min_value , last_position)
-
     
 def find_max(weather_data):
     """Calculates the maximum value in a list of numbers.
@@ -248,4 +245,3 @@ def generate_daily_summary(weather_data):
     return daily_summary
 
 
-################??????????????????????Question for daily summary or summary how to handle missing column I handled by skipping that day is it the best way?

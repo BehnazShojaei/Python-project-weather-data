@@ -25,6 +25,8 @@ def calculate_mean(weather_data):
     # print (mean_value)
     # return mean_value
 
+    
+
     # try:
     #     weather_data = [float(item) for item in weather_data]
     # except ValueError:
@@ -50,7 +52,7 @@ def calculate_mean(weather_data):
 
     if not valid_data:  # If all values are None, or the list is empty return empty tuple 
         return ()
-    mean_value = sum(valid_data) / len(weather_data)
+    mean_value = sum(valid_data) / len(valid_data)
     print (mean_value)
     return mean_value
 
